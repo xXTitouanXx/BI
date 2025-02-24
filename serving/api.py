@@ -1,4 +1,3 @@
-# serving/api.py
 from fastapi import FastAPI
 import joblib
 import pandas as pd
@@ -6,8 +5,9 @@ import pandas as pd
 app = FastAPI()
 model = joblib.load('/artifacts/model.pkl')
 
-@app.post("/predict")
+@app.post("/predict-contractable")
 async def predict(data: dict):
+    # On reçoit un json, faut-il adapter ?
     df = pd.DataFrame([data])
     return {"prediction": model.predict(df).tolist()}
 
