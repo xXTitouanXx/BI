@@ -4,16 +4,16 @@ import pandas as pd
 import os
 
 ROOT_DIR = os.path.dirname(os.getcwd())
-PKL_DIR = os.path.join(ROOT_DIR, 'artifacts')   
+
+DATA_DIR = os.path.join(ROOT_DIR, 'data')
+PKL_DIR = os.path.join(ROOT_DIR, 'artifacts') 
+
+PROD_DATA_PATH = os.path.join(DATA_DIR, 'prod_data.csv')
 EMBEDDING_PATH = os.path.join(PKL_DIR, 'embedding.pkl')
-SCALER_PATH = os.path.join(PKL_DIR, 'scaler.pkl')
 PIPELINE_PATH = os.path.join(PKL_DIR, 'pipeline.pkl')
 
 with open(EMBEDDING_PATH, "rb") as f:
     EMBEDDING = pickle.load(f)
-
-with open(SCALER_PATH, "rb") as f:
-    SCALER = pickle.load(f)
 
 with open(PIPELINE_PATH, "rb") as f:
     PIPELINE = pickle.load(f)
@@ -80,14 +80,13 @@ async def feedback(request: Request):
     prediction = feedback_data["prediction"]
     true_target = feedback_data["true_target"]
     
-    data_df = pd.DataFrame([data])
-
-    if SCALER is not None:
-        data_scaled = SCALER.transform(data_df)
-        data_df = pd.DataFrame(data_scaled, columns=EXPECTED_COLUMNS)
+    data_df = pd.DataFrame([data], columns=EXPECTED_COLUMNS)    
+    data_df["Target"] = true_target
+    data_df["Prediction"] = prediction
     
-    data_df["target"] = true_target
-    data_df["prediction"] = prediction
-    data_df.to_csv("prod_data.csv", mode="a", header=not os.path.exists("prod_data.csv"), index=False)
+    if not os.path.exists(PROD_DATA_PATH):
+        data_df.to_csv(PROD_DATA_PATH, index=False)
+    else:
+        data_df.to_csv(PROD_DATA_PATH, mode="a", header=False, index=False)
     
     return {"message": "Feedback enregistré avec succès !"}

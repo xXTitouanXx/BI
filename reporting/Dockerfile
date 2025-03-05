@@ -3,5 +3,4 @@ WORKDIR /app
 COPY project.py .
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
-RUN ["python", "project.py"]
-CMD ["evidently", "ui", "--host=0.0.0.0", "--port=8082"]
+CMD ["sh", "-c", "python project.py && evidently ui --host=0.0.0.0 --port=8082"]
