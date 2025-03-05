@@ -14,11 +14,6 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import BaggingClassifier, AdaBoostClassifier, RandomForestClassifier
 
-
-
-
-
-
 def readfile(file, sep=','):
     df = pd.read_csv(file, sep=sep)
 
